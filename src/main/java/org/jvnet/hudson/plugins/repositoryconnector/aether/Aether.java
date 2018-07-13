@@ -229,13 +229,27 @@ public class Aether {
         return new AetherResult(rootNode, nlg.getFiles());
     }
 
-    public VersionRangeResultWithLatest resolveVersions(String groupId, String artifactId)
+    public VersionRangeResultWithLatest resolveVersions(String repoId, String groupId, String artifactId)
             throws VersionRangeResolutionException {
         Artifact artifact = new DefaultArtifact(groupId, artifactId, null, null, "[0,)");
 
         VersionRangeRequest rangeRequest = new VersionRangeRequest();
         rangeRequest.setArtifact( artifact );
-        rangeRequest.setRepositories( repositories );
+
+        // zorian fix bug: limit the repository to the one configured by job
+        List<RemoteRepository> remoteRepositoryList = new ArrayList<>();
+        for (RemoteRepository remoteRepository : repositories) {
+            if (remoteRepository.getId().equalsIgnoreCase(repoId)) {
+                remoteRepositoryList.add(remoteRepository);
+                break;
+            }
+        }
+
+        if (remoteRepositoryList.size() == 0) {
+            remoteRepositoryList.addAll(repositories);
+        }
+
+        rangeRequest.setRepositories( remoteRepositoryList );
 
         return (VersionRangeResultWithLatest)repositorySystem.resolveVersionRange( session, rangeRequest );
     }

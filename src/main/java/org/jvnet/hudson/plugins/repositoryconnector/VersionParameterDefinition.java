@@ -66,7 +66,7 @@ public class VersionParameterDefinition extends
             Aether aether = new Aether(DESCRIPTOR.getRepos(), localRepo);
             try {
                 // Get the versions
-                VersionRangeResultWithLatest versionsWithLatest = aether.resolveVersions(groupid, artifactid);
+                VersionRangeResultWithLatest versionsWithLatest = aether.resolveVersions(repoid, groupid, artifactid);
                 List<Version> versions = versionsWithLatest.getVersions();
 
                 // Reverse order to have the latest versions on top of the list
@@ -229,7 +229,7 @@ public class VersionParameterDefinition extends
             File localRepo = RepositoryConfiguration.get().getLocalRepoPath();
             Aether aether = new Aether(DESCRIPTOR.getRepos(), localRepo);
             try {
-                List<Version> versions = aether.resolveVersions(groupid, artifactid).getVersions();
+                List<Version> versions = aether.resolveVersions(repoid, groupid, artifactid).getVersions();
                 if (versions.isEmpty()) {
                     result = FormValidation.error(Messages.NoVersions() + " " + groupid + "." + artifactid);
                     log.log(Level.FINE, "No versions found for " + groupid + "." + artifactid);
